@@ -23,11 +23,13 @@ const bootstrapPubSub = async () => {
   const create = {
     topic: 'stripe-events',
     subscription: 'manual-pull',
+    pushSubName: 'push-sub',
+    pushSubUrl: 'http://localhost:8080',
   };
 
   const [newTopic] = await pubSubClient.createTopic(create.topic);
   if (!newTopic) console.log('topic failed to be created. ');
-  else console.log('new topic created:', newTopic);
+  else console.log('new topic created:', newTopic.name);
 
   const [newSub] = await pubSubClient.createSubscription(
     create.topic,
@@ -37,7 +39,17 @@ const bootstrapPubSub = async () => {
     },
   );
   if (!newSub) console.log('subscription falied to cerate');
-  else console.log('new subscription created', newSub);
+  else console.log('new subscription created', newSub.name);
+
+  const [newPushSub] = await pubSubClient.createSubscription(
+    create.topic,
+    create.pushSubName,
+    {
+      pushEndpoint: create.pushSubUrl,
+    },
+  );
+  if (!newPushSub) console.log('subscription falied to cerate');
+  else console.log('new subscription created', newPushSub.name);
 
   // const topicList = await pubSubClient.getTopics();
   // console.log('topic list: %O', topicList);

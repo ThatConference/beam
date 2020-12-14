@@ -14,10 +14,9 @@ const subscription = isProd => {
       'Both env PUBSUB_EMULATOR_HOST and PUBSUB_PROJECT_ID are requried for accessing emulator',
     );
 
-  function list(isFullDetails) {
+  function list() {
     return pubSubClient.getSubscriptions().then(data => {
       const [subscriptions] = data;
-      if (isFullDetails) return subscriptions;
       return subscriptions.map(t => t.name);
     });
   }

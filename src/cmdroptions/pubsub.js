@@ -3,7 +3,7 @@ import subscription from '../gcp/pubsub/subscription';
 import bootstrap from '../gcp/bootstrap/pubSub';
 import message from '../gcp/pubsub/message';
 
-const itemOptions = ['topic', 'subscription', 'subscriber'];
+const itemOptions = ['topics', 'subscriptions', 'subscribers'];
 export default program => {
   program
     .command('bs-pubsub')
@@ -13,11 +13,15 @@ export default program => {
   program
     .command('list <item>')
     .description('Lists different items from PubSub')
+    .option(
+      '-f, --fullDetails',
+      '(optional) returns full object details of subscriptions, not only name',
+    )
     .on('--help', () => {
       console.log('\n available items to list');
       itemOptions.forEach(i => console.log(` * ${i}`));
     })
-    .action(item => {
+    .action((item, cmd) => {
       switch (item) {
         case 'topics':
           topic()
@@ -26,7 +30,7 @@ export default program => {
           break;
         case 'subscriptions':
           subscription()
-            .list()
+            .list(cmd.fullDetails)
             .then(s => s.map(s1 => console.log(s1)));
 
           break;
@@ -53,7 +57,7 @@ export default program => {
     )
     .option(
       '-t, --timeout <int>',
-      'The length of time to listen for messages. Default 10000 ms',
+      '(optional) The length of time to listen for messages. Default 10000 ms',
     )
     .action((sub, cmd) => {
       let timeout = 10000;

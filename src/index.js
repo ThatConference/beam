@@ -5,7 +5,8 @@ import cmdPubsub from './cmdroptions/pubsub';
 
 cmdDefault(program);
 cmdPubsub(program);
-program.on('command:*', command => {
+// eslint-disable-next-line func-names
+program.on('command:*', function (command) {
   const firstCommand = command[0];
   if (!this.commands.find(c => c._name === firstCommand)) {
     console.error(
