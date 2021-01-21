@@ -3,7 +3,7 @@
 import 'dotenv/config';
 import { PubSub } from '@google-cloud/pubsub';
 
-const pubSubClient = new PubSub();
+const pubSubClient = new PubSub({ projectId: 'dev-that' });
 
 const bootstrapPubSub = async () => {
   console.log('boostrap called');
@@ -22,12 +22,20 @@ const bootstrapPubSub = async () => {
 
   const create = {
     topic: 'stripe-events',
+    topicDeadletter: 'stripe-events-deadletter',
     subscription: 'manual-pull',
     pushSubName: 'push-sub',
     pushSubUrl: 'http://localhost:8080',
   };
-
-  const [newTopic] = await pubSubClient.createTopic(create.topic);
+  let newTopic;
+  try {
+    console.log('create topic', create.topic);
+    [newTopic] = await pubSubClient.createTopic(create.topic);
+    console.log('done creating topic');
+  } catch (err) {
+    console.error('Error creating Topic', err);
+    throw err;
+  }
   if (!newTopic) console.log('topic failed to be created. ');
   else console.log('new topic created:', newTopic.name);
 
