@@ -25,7 +25,7 @@ const bootstrapPubSub = async () => {
     topicDeadletter: 'stripe-events-deadletter',
     subscription: 'manual-pull',
     pushSubName: 'push-sub',
-    pushSubUrl: 'http://localhost:8080',
+    pushSubUrl: 'http://localhost:8080/stripe-event',
   };
   let newTopic;
   try {
@@ -39,6 +39,9 @@ const bootstrapPubSub = async () => {
   if (!newTopic) console.log('topic failed to be created. ');
   else console.log('new topic created:', newTopic.name);
 
+  console.log(
+    'creating manual pull subscripting which can be read by this cli',
+  );
   const [newSub] = await pubSubClient.createSubscription(
     create.topic,
     create.subscription,
@@ -49,6 +52,9 @@ const bootstrapPubSub = async () => {
   if (!newSub) console.log('subscription falied to cerate');
   else console.log('new subscription created', newSub.name);
 
+  console.log(
+    'creating subscription which pushes to http end point (i.e. brinks)',
+  );
   const [newPushSub] = await pubSubClient.createSubscription(
     create.topic,
     create.pushSubName,
@@ -57,10 +63,16 @@ const bootstrapPubSub = async () => {
     },
   );
   if (!newPushSub) console.log('subscription falied to cerate');
-  else console.log('new subscription created', newPushSub.name);
+  else
+    console.log(
+      `new subscription created: ${newPushSub.name} on pushEndpoint ${newPushSub.metadata.pushConfig.pushEndpoint}`,
+    );
 
   // const topicList = await pubSubClient.getTopics();
   // console.log('topic list: %O', topicList);
+
+  // TODO: add deadletter stuff
+
   return 'done';
 };
 
